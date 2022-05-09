@@ -10,16 +10,14 @@
 
 #include <Eigen/Dense>
 
+#include "kd_tree.hpp"
+
 struct Leaf
 {
-  // ボクセル内の点群数
   int num_points;
-  // 固有ベクトル
   Eigen::Matrix3f eigenvec;
   Eigen::Vector3f eigenvalues;
-  // ボクセル内の点群の平均(実質重心)
   Eigen::Vector3f mean;
-  // ボクセル内の点群の共分散行列
   Eigen::Matrix3f covariance;
   Leaf()
   {
@@ -34,7 +32,10 @@ template <typename PointType>
 class VoxelGridCovariance
 {
 public:
-  VoxelGridCovariance() : num_points_per_voxel_(3) {}
+  VoxelGridCovariance() : num_points_per_voxel_(3)
+  {
+    kd_tree_ptr_ = std::make_shared<KDTree<PointType>>();
+  }
   ~VoxelGridCovariance() = default;
 
   void setLeafSize(const double leaf_size_x, const double leaf_size_y, const double leaf_size_z)
@@ -99,6 +100,8 @@ public:
   std::map<std::size_t, Leaf> getLeafMap() { return leaf_map_; }
 
 private:
+  std::shared_ptr<KDTree> kd_tree_ptr_;
+
   Eigen::Vector3f resolution_;
 
   int num_points_per_voxel_;
