@@ -10,7 +10,7 @@
 
 #include <Eigen/Dense>
 
-#include "kd_tree.hpp"
+#include "ndt_scan_matching/kd_tree.hpp"
 
 struct Leaf
 {
@@ -28,12 +28,14 @@ struct Leaf
   }
 };
 
-template <typename PointType>
+template <class PointType>
 class VoxelGridCovariance
 {
 public:
   VoxelGridCovariance() : num_points_per_voxel_(3)
   {
+    output_.reset(new pcl::PointCloud<PointType>);
+
     kd_tree_ptr_ = std::make_shared<KDTree<PointType>>();
   }
   ~VoxelGridCovariance() = default;
@@ -50,10 +52,34 @@ public:
     if (input->points.size() == 0) return;
 
     buildVoxelGrid(input);
+
+    kd_tree_ptr_->setInputCloud(getPoints());
   }
+
+  void radiusSearch(const PointType point, const double radius, std::vector<Leaf> & leaf_vec)
+  {
+    std::vector<int> indices;
+    kd_tree_ptr_->radiusSearch(point, radius, indices);
+
+    if (indices.empty()) return;
+
+    auto leafs = getLeafMap();
+    auto leafs_index = getVoxelGridIndex();
+
+    for (const auto indice : indices) {
+      auto leaf = leafs.find(leafs_index[indice]);
+      leaf_vec.emplace_back(leaf->second);
+    }
+  }
+
+  std::vector<int> getVoxelGridIndex() { return indices_; }
+  typename pcl::PointCloud<PointType>::Ptr getPoints() { return output_; }
 
   void buildVoxelGrid(const typename pcl::PointCloud<PointType>::Ptr input)
   {
+    leaf_map_.clear();
+    output_->points.clear();
+
     // get min and max coordinate of points
     Eigen::Vector4f min, max;
     pcl::getMinMax3D<PointType>(*input, min, max);
@@ -89,24 +115,39 @@ public:
     for (auto & leaf : leaf_map_) {
       const float size_per_voxel = static_cast<float>(leaf.second.num_points);
       leaf.second.mean = (leaf.second.mean / size_per_voxel);
-      leaf.second.covariance = ((leaf.second.covariance / size_per_voxel) - leaf.second.mean * leaf.second.mean.transpose());
-      Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> solver(leaf.second.covariance);
-      if(solver.info() != Eigen::Success) continue;
-      leaf.second.eigenvec = solver.eigenvectors();
-      leaf.second.eigenvalues = solver.eigenvalues().asDiagonal().diagonal();
+
+      if (num_points_per_voxel_ <= leaf.second.num_points) {
+        PointType p;
+        p.x = leaf.second.mean[0];
+        p.y = leaf.second.mean[1];
+        p.z = leaf.second.mean[2];
+        output_->points.emplace_back(p);
+
+        indices_.emplace_back(leaf.first);
+        leaf.second.covariance =
+          ((leaf.second.covariance / size_per_voxel) -
+           leaf.second.mean * leaf.second.mean.transpose());
+        Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> solver(leaf.second.covariance);
+        if (solver.info() != Eigen::Success) continue;
+        leaf.second.eigenvec = solver.eigenvectors();
+        leaf.second.eigenvalues = solver.eigenvalues().asDiagonal().diagonal();
+      }
     }
   }
 
   std::map<std::size_t, Leaf> getLeafMap() { return leaf_map_; }
 
 private:
-  std::shared_ptr<KDTree> kd_tree_ptr_;
+  std::shared_ptr<KDTree<PointType>> kd_tree_ptr_;
 
   Eigen::Vector3f resolution_;
+
+  typename pcl::PointCloud<PointType>::Ptr output_;
 
   int num_points_per_voxel_;
 
   std::map<std::size_t, Leaf> leaf_map_;
+  std::vector<int> indices_;
 };
 
 #endif

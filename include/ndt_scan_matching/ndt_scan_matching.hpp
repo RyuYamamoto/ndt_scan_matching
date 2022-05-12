@@ -1,19 +1,35 @@
 #ifndef _NDT_SCAN_MATCHING_HPP_
 #define _NDT_SCAN_MATCHING_HPP_
 
+#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
-#include "ndt.hpp"
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+
+#include "ndt_scan_matching/ndt.hpp"
 
 class NDTScanMatching : public rclcpp::Node
 {
 public:
   NDTScanMatching(const rclcpp::NodeOptions & node_options);
   ~NDTScanMatching() = default;
+
+  void mapCallback(const sensor_msgs::msg::PointCloud2 msg);
+  void sensorCallback(const sensor_msgs::msg::PointCloud2 msg);
+  void initialPoseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped msg);
+
 private:
+  rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr
+    initialpose_subscriber_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr map_points_subscriber_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sensor_points_subscriber_;
+
+  std::shared_ptr<NDT<pcl::PointXYZ>> ndt_ptr_;
+
+  geometry_msgs::msg::PoseWithCovarianceStamped initial_pose_;
 };
 
 #endif

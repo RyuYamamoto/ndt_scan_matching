@@ -16,7 +16,7 @@ find_package(Eigen3 REQUIRED)
 find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
-include_directories(include ${OpenCV_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
+include_directories(include ${PCL_INCLUDE_DIRS})
 
 ament_auto_add_library(ndt_scan_matching SHARED
   src/ndt_scan_matching.cpp
@@ -36,8 +36,6 @@ endif()
 
 ament_auto_package(
   INSTALL_TO_SHARE
-  launch
-  rviz
 )
 
 install(FILES DESTINATION share/${PROJECT_NAME})
