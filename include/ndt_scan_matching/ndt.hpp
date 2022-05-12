@@ -16,9 +16,11 @@ public:
   }
   ~NDT() = default;
 
+  void setResolution(const double resolution) { resolution_ = resolution; }
+
   void align(const Eigen::Matrix4f init_guess)
   {
-    if(input_ == nullptr) return;
+    if (input_ == nullptr) return;
   }
   void align(typename pcl::PointCloud<PointType>::Ptr output, const Eigen::Matrix4f init_guess) {}
   void setInputSource(const typename pcl::PointCloud<PointType>::Ptr input) { input_ = input; }
@@ -30,7 +32,7 @@ public:
   Eigen::Matrix4f getFinalTransformation() {}
 
   // for demo
-  void radiusSearch(const PointType point, const double radius, std::vector<Leaf> &leaf_vec)
+  void radiusSearch(const PointType point, const double radius, std::vector<Leaf> & leaf_vec)
   {
     voxel_grid_covariance_->radiusSearch(point, radius, leaf_vec);
   }

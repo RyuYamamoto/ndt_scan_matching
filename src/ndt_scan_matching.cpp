@@ -5,6 +5,10 @@ NDTScanMatching::NDTScanMatching(const rclcpp::NodeOptions & node_options)
 {
   ndt_ptr_ = std::make_shared<NDT<pcl::PointXYZ>>();
 
+  const double resolution = this->declare_parameter("resolution", 2.0);
+
+  ndt_ptr_->setResolution(resolution);
+
   map_points_subscriber_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
     "points_map", rclcpp::QoS{1}.transient_local(),
     std::bind(&NDTScanMatching::mapCallback, this, std::placeholders::_1));
@@ -27,10 +31,7 @@ void NDTScanMatching::mapCallback(const sensor_msgs::msg::PointCloud2 msg)
   ndt_ptr_->setInputTarget(map);
 }
 
-void NDTScanMatching::sensorCallback(const sensor_msgs::msg::PointCloud2 msg)
-{
-
-}
+void NDTScanMatching::sensorCallback(const sensor_msgs::msg::PointCloud2 msg) {}
 
 void NDTScanMatching::initialPoseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped msg)
 {

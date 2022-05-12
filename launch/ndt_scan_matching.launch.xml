@@ -1,0 +1,9 @@
+<launch>
+  <arg name="resolution" default="2.0"/>
+
+  <node pkg="ndt_scan_matching" exec="ndt_scan_matching_node" name="ndt_scan_matching">
+    <param name="resolution" value="$(var resolution)"/>
+  </node>
+
+  <node pkg="rviz2" exec="rviz2" name="rviz2" args="-d $(find-pkg-share ndt_scan_matching)/rviz/ndt_scan_matching.rviz"/>
+</launch>

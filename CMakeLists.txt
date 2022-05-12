@@ -36,6 +36,7 @@ endif()
 
 ament_auto_package(
   INSTALL_TO_SHARE
+  launch rviz
 )
 
 install(FILES DESTINATION share/${PROJECT_NAME})
