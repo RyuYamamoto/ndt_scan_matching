@@ -5,6 +5,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl_ros/transforms.hpp>
 
 template <typename PointType>
 class NDT
@@ -21,6 +22,9 @@ public:
   void align(const Eigen::Matrix4f init_guess)
   {
     if (input_ == nullptr) return;
+
+    typename pcl::PointCloud<PointType>::Ptr transform_cloud_ptr(new pcl::PointCloud<PointType>);
+    pcl::transformPointCloud(*input_, *transform_cloud_ptr, init_guess);
   }
   void align(typename pcl::PointCloud<PointType>::Ptr output, const Eigen::Matrix4f init_guess) {}
   void setInputSource(const typename pcl::PointCloud<PointType>::Ptr input) { input_ = input; }

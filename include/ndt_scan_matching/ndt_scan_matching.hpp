@@ -9,6 +9,9 @@
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
 
+#include <tf2_eigen/tf2_eigen.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include "ndt_scan_matching/ndt.hpp"
 
 class NDTScanMatching : public rclcpp::Node

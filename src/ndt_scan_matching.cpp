@@ -43,6 +43,12 @@ void NDTScanMatching::initialPoseCallback(const geometry_msgs::msg::PoseWithCova
   p.y = msg.pose.pose.position.y;
   p.z = 0.0;
 
+  Eigen::Affine3d initialpose_affine;
+  tf2::fromMsg(msg.pose.pose, initialpose_affine);
+  Eigen::Matrix4f init_guess = initialpose_affine.matrix().cast<float>();
+
+  ndt_ptr_->align(init_guess);
+
   std::vector<Leaf> leaf_vec;
   ndt_ptr_->radiusSearch(p, 2.0, leaf_vec);
 }
