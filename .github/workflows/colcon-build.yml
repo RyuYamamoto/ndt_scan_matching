@@ -1,4 +1,4 @@
-name: Lint ROS2 package
+name: colcon-build
 on:
   # Run this action whenever a pull request is made
   pull_request:
