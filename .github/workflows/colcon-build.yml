@@ -3,6 +3,7 @@ name: colcon_build
 on:
   pull_request:
     types: ["opened", "reopend"]
+  workflow_dispatch:
 
 jobs:
   build:
