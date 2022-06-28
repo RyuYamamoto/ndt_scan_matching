@@ -1,0 +1,22 @@
+name: colcon_build
+
+on:
+  pull_request:
+    types: ["opened", "reopend"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ros:galactic
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - uses: ros-tooling/setup-ros@@v0.3
+        with:
+          required-ros-distributions: galactic
+
+      - uses: ros-tooling/action-ros-ci@v0.2
+        with:
+          package-name: my_package
+          target-ros2-distro: galactic
