@@ -1,18 +1,18 @@
 #ifndef _NDT_SCAN_MATCHING_HPP_
 #define _NDT_SCAN_MATCHING_HPP_
 
-#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
+#include "ndt_scan_matching/ndt.hpp"
+
 #include <rclcpp/rclcpp.hpp>
+
+#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
-
 #include <tf2_eigen/tf2_eigen.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
-#include "ndt_scan_matching/ndt.hpp"
 
 class NDTScanMatching : public rclcpp::Node
 {

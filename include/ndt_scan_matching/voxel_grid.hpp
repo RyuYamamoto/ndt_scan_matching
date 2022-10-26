@@ -1,16 +1,16 @@
 #ifndef _VOXEL_GRID_HPP_
 #define _VOXEL_GRID_HPP_
 
-#include <map>
-#include <vector>
+#include "ndt_scan_matching/kd_tree.hpp"
+
+#include <Eigen/Dense>
 
 #include <pcl/common/common.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <Eigen/Dense>
-
-#include "ndt_scan_matching/kd_tree.hpp"
+#include <map>
+#include <vector>
 
 struct Leaf
 {
@@ -85,7 +85,8 @@ public:
     pcl::getMinMax3D<PointType>(*input, min, max);
 
     // min and max of voxel
-    // maximum and minimum coordinate values obtained by getMinMax3D are used to determine the resolution.
+    // maximum and minimum coordinate values obtained by getMinMax3D are used to determine the
+    // resolution.
     Eigen::Vector4i min_b, max_b;
     for (std::size_t idx = 0; idx < 3; idx++) {
       min_b[idx] = static_cast<int>(std::floor(min[idx] / resolution_[idx]));
