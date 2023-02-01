@@ -47,11 +47,14 @@ void NDTScanMatching::initialPoseCallback(const geometry_msgs::msg::PoseWithCova
   tf2::fromMsg(msg.pose.pose, initialpose_affine);
   Eigen::Matrix4f init_guess = initialpose_affine.matrix().cast<float>();
 
+  pcl::PointCloud<pcl::PointXYZ> input_cloud;
   pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud(new pcl::PointCloud<pcl::PointXYZ>());
   ndt_ptr_->align(output_cloud, init_guess);
 
   std::vector<Leaf> leaf_vec;
   ndt_ptr_->radiusSearch(p, 2.0, leaf_vec);
+
+  utils::transform_point_cloud<pcl::PointXYZ>(input_cloud, *output_cloud, init_guess);
 }
 
 #include "rclcpp_components/register_node_macro.hpp"

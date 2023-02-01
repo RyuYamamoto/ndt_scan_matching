@@ -2,6 +2,7 @@
 #define _NDT_HPP_
 
 #include "ndt_scan_matching/voxel_grid.hpp"
+#include "ndt_scan_matching/utils.hpp"
 
 #include <pcl_ros/transforms.hpp>
 
